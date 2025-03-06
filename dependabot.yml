@@ -1,0 +1,17 @@
+version: 2
+updates:
+  # Vérification des dépendances Gradle
+  - package-ecosystem: "gradle"
+    directory: "/" # Emplacement du fichier build.gradle ou build.gradle.kts
+    schedule:
+      interval: "weekly" # Vérification des mises à jour chaque semaine
+    open-pull-requests-limit: 5 # Limite le nombre de PR ouvertes en même temps
+    ignore:
+      - dependency-name: "org.springframework.boot"
+        versions: ["5.x"] # Ignore les mises à jour majeures
+
+  # Vérification des dépendances GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/" # Emplacement du fichier de workflow .yml
+    schedule:
+      interval: "weekly" # Vérification des mises à jour chaque semaine
