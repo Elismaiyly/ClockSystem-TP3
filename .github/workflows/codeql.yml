@@ -1,0 +1,38 @@
+name: "CodeQL Analysis"
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  codeql-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Étape 1: Checkout du code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Étape 2: Initialiser CodeQL avec le langage Java
+      - name: Set up CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'java'
+          # Utilise les requêtes de sécurité par défaut de CodeQL
+          queries: 'security-queries'
+
+      # Étape 3: Construire le projet (en utilisant Gradle ici)
+      - name: Build the project
+        run: ./gradlew build --no-daemon
+
+      # Étape 4: Exécuter l'analyse CodeQL
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      # Étape 5: Afficher les résultats dans la section "Security" sous "Code scanning alerts"
