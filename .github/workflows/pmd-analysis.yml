@@ -1,4 +1,4 @@
-name: PMD Code Quality Analysis
+name: Static Code Analysis with PMD
 
 on:
   push:
@@ -8,11 +8,11 @@ on:
 
 jobs:
   pmd_analysis:
-    name: Run PMD Static Analysis
+    name: Run PMD Analysis
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 21
@@ -25,20 +25,17 @@ jobs:
         uses: pmd/pmd-github-action@v1
         with:
           rulesets: 'category/java/bestpractices.xml'
-          analyzeModifiedFilesOnly: false
-
-      - name: Check PMD Violations
-        run: |
-          VIOLATIONS=$(find . -name "pmd-report.xml" | xargs grep "<violation" | wc -l)
-          MAX_VIOLATIONS=10
-          echo "PMD violations found: $VIOLATIONS"
-          if [ "$VIOLATIONS" -gt "$MAX_VIOLATIONS" ]; then
-            echo "❌ Too many PMD violations ($VIOLATIONS). Failing the workflow."
-            exit 1
-          fi
+          output-format: 'sarif'
+          output-file: 'pmd-report.sarif'
+          fail-on-violations: true  # Arrête le workflow si trop de violations
 
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
         with:
-          name: pmd-report
-          path: "**/pmd-report.xml"
+          name: PMD_Report  # Pas d’espace dans le nom
+          path: pmd-report.sarif
+
+      - name: Upload Code Scanning Alert
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: 'pmd-report.sarif'
