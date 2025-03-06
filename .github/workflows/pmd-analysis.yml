@@ -1,4 +1,4 @@
-name: Static Code Analysis with PMD
+name: PMD Code Analysis
 
 on:
   push:
@@ -21,15 +21,19 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
+      - name: Setup PMD
+        run: |
+          wget https://github.com/pmd/pmd/releases/download/pmd_releases%2F7.11.0/pmd-dist-7.11.0-bin.zip
+          unzip pmd-dist-7.11.0-bin.zip
+          mv pmd-bin-7.11.0 /opt/pmd
+          echo "/opt/pmd/bin" >> $GITHUB_PATH
+
       - name: Run PMD Analysis
-        uses: pmd/pmd-github-action@v1
-        with:
-          rulesets: 'category/java/bestpractices.xml'
-          analyzeModifiedFilesOnly: false  # Analyse tout le code
-          createGitHubAnnotations: true  # Affiche les erreurs directement dans GitHub
+        run: |
+          /opt/pmd/bin/pmd check --dir src --rulesets category/java/bestpractices.xml --format sarif > pmd-report.sarif
 
       - name: Upload PMD Report
         uses: actions/upload-artifact@v4
         with:
-          name: PMD_Report  # ✅ Correction du nom sans espace
+          name: pmd-report  # ✅ Pas d'espaces
           path: pmd-report.sarif
