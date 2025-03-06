@@ -29,12 +29,11 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # Initialize CodeQL
+      # Initialize CodeQL (version v3)
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v3
         with:
           languages: java
-          config-file: .github/codeql/java-config.yml
 
       # Build the project
       - name: Build project
@@ -42,4 +41,4 @@ jobs:
 
       # Perform CodeQL analysis
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v3
